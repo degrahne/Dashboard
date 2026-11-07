@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de validación | Fábrica de helados</title>
+<style>
+:root{--bg:#0c1220;--panel:#151f33;--panel2:#1b2942;--text:#edf3ff;--muted:#a9b8d0;--blue:#66b3ff;--purple:#a78bfa;--green:#65d6a5;--yellow:#f6c96b;--red:#ff8585;--line:#2c3b56}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(140deg,#0c1220,#111b2d 55%,#17162d);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+main{max-width:1180px;margin:auto;padding:28px 18px 50px}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap}
+h1{font-size:clamp(25px,4vw,36px);margin:0 0 7px}.sub{color:var(--muted);max-width:760px;margin:0}
+.tag{border:1px solid var(--line);padding:8px 12px;border-radius:99px;color:#c8d8f2;font-size:12px}
+.notice{margin:22px 0;padding:13px 16px;border:1px solid #715b2d;background:#332b1b;color:#ffe5a8;border-radius:12px}
+h2{font-size:20px;margin:28px 0 13px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.card,.panel{background:rgba(21,31,51,.94);border:1px solid var(--line);border-radius:15px;padding:17px;box-shadow:0 8px 24px #0002}
+.kpi .label{font-size:12px;color:var(--muted)}.kpi strong{display:block;font-size:29px;margin-top:5px}.kpi small{color:var(--muted)}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.panel p{color:var(--muted);margin-top:4px}
+form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}
+label{font-size:12px;color:#c5d3e8}input,select{width:100%;padding:10px 11px;border-radius:9px;border:1px solid #40516e;background:#0e1728;color:var(--text);font:inherit}
+input:focus,select:focus{outline:2px solid var(--blue);border-color:transparent}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:9px;padding:10px 14px;font-weight:650;cursor:pointer;background:var(--blue);color:#071322}
+button.secondary{background:#293a57;color:var(--text);border:1px solid #40516e}button.danger{background:#512b38;color:#ffdce2;border:1px solid #844454}
+.chartrow{display:flex;align-items:center;gap:10px;margin:14px 0}.chartlabel{width:145px;color:#c8d5e9;font-size:13px}.track{height:11px;flex:1;background:#0b1423;border-radius:20px;overflow:hidden}.bar{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--purple));width:0%}.chartvalue{width:45px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:800px}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--line)}th{color:#b9c9e2;font-weight:600}td{color:#e6edfa}.tablewrap{overflow-x:auto}
+.pill{display:inline-block;padding:3px 8px;border-radius:99px;background:#263b55;color:#cfe5ff;font-size:11px}
+.empty{color:var(--muted);padding:18px 0}.foot{font-size:12px;color:var(--muted);margin-top:25px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}}
+@media(max-width:520px){main{padding:20px 12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}form{grid-template-columns:1fr}.field.full{grid-column:auto}.chartlabel{width:115px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div><h1>Validación del prototipo</h1><p class="sub">Videojuego de terror en Roblox · Fábrica de helados. Registro de pruebas para evaluar claridad, dificultad, orientación, tensión y uso de mecánicas.</p></div>
+    <span class="tag">DASHBOARD · PRUEBAS DE JUEGO</span>
+  </header>
+  <div class="notice"><strong>Importante:</strong> este dashboard inicia vacío. Registra aquí los datos reales de cada participante. Las valoraciones son de 1 a 5; no se generan resultados ficticios.</div>
+
+  <h2>Resumen de las pruebas</h2>
+  <section class="grid">
+    <div class="card kpi"><span class="label">Participantes registrados</span><strong id="kParticipants">0</strong><small>Pruebas guardadas</small></div>
+    <div class="card kpi"><span class="label">Tasa de finalización</span><strong id="kCompletion">—</strong><small>Partidas completadas</small></div>
+    <div class="card kpi"><span class="label">Claridad promedio</span><strong id="kClarity">—</strong><small>Escala de 1 a 5</small></div>
+    <div class="card kpi"><span class="label">Dificultad promedio</span><strong id="kDifficulty">—</strong><small>Objetivo aproximado: 3/5</small></div>
+  </section>
+
+  <div class="layout">
+    <section class="panel">
+      <h2 style="margin-top:0">Registrar una prueba</h2>
+      <p>Completa una ficha por cada jugador. Las valoraciones se responden al terminar la partida.</p>
+      <form id="testForm">
+        <div class="field"><label for="player">Código o nombre del participante *</label><input id="player" required maxlength="40" placeholder="Ej. Jugador 01"></div>
+        <div class="field"><label for="minutes">Duración de la partida (minutos) *</label><input id="minutes" type="number" min="0" step="0.5" required placeholder="Ej. 12"></div>
+        <div class="field"><label for="clarity">Claridad de las mecánicas (1–5) *</label><select id="clarity" required><option value="">Seleccionar</option><option value="1">1 · Nada clara</option><option value="2">2 · Poco clara</option><option value="3">3 · Regular</option><option value="4">4 · Clara</option><option value="5">5 · Muy clara</option></select></div>
+        <div class="field"><label for="difficulty">Dificultad percibida (1–5) *</label><select id="difficulty" required><option value="">Seleccionar</option><option value="1">1 · Muy fácil</option><option value="2">2 · Fácil</option><option value="3">3 · Equilibrada</option><option value="4">4 · Difícil</option><option value="5">5 · Muy difícil</option></select></div>
+        <div class="field"><label for="navigation">Facilidad para orientarse (1–5) *</label><select id="navigation" required><option value="">Seleccionar</option><option value="1">1 · Muy confusa</option><option value="2">2 · Confusa</option><option value="3">3 · Regular</option><option value="4">4 · Fácil</option><option value="5">5 · Muy fácil</option></select></div>
+        <div class="field"><label for="tension">Tensión o terror percibido (1–5) *</label><select id="tension" required><option value="">Seleccionar</option><option value="1">1 · Nada de tensión</option><option value="2">2 · Poca</option><option value="3">3 · Moderada</option><option value="4">4 · Alta</option><option value="5">5 · Muy alta</option></select></div>
+        <div class="field"><label for="errors">Dudas o errores observados</label><input id="errors" type="number" min="0" step="1" value="0"></div>
+        <div class="field"><label for="caught">Veces que el monstruo lo atrapó</label><input id="caught" type="number" min="0" step="1" value="0"></div>
+        <div class="field"><label for="hides">Veces que utilizó un escondite</label><input id="hides" type="number" min="0" step="1" value="0"></div>
+        <div class="field"><label for="itemsFound">Objetos importantes encontrados</label><input id="itemsFound" type="number" min="0" step="1" value="0"></div>
+        <div class="field"><label for="itemsTotal">Total de objetos importantes disponibles</label><input id="itemsTotal" type="number" min="0" step="1" value="0"></div>
+        <div class="field"><label for="taser">Veces que utilizó el taser</label><input id="taser" type="number" min="0" step="1" value="0"></div>
+        <div class="field"><label for="completed">¿Completó el nivel?</label><select id="completed"><option value="yes">Sí</option><option value="no">No</option></select></div>
+        <div class="field full"><label for="notes">Observaciones del evaluador (dudas, errores, comentarios)</label><input id="notes" maxlength="240" placeholder="Ej. No identificó el primer escondite hasta ser perseguido."></div>
+      </form>
+      <div class="actions"><button type="button" id="saveBtn">Guardar prueba</button><button type="reset" form="testForm" class="secondary">Limpiar formulario</button></div>
+    </section>
+
+    <section class="panel">
+      <h2 style="margin-top:0">Indicadores de percepción</h2>
+      <p>Promedio de las respuestas registradas. Claridad y orientación altas son favorables; la dificultad se interpreta buscando un punto medio.</p>
+      <div id="bars"><div class="empty">Todavía no hay pruebas registradas.</div></div>
+      <h2>Lectura rápida</h2>
+      <div id="interpretation" class="empty">Al registrar participantes aparecerán observaciones orientativas para detectar posibles ajustes.</div>
+      <p style="font-size:12px">Referencia: claridad y orientación deseables ≥ 4/5; dificultad deseable cercana a 3/5; tensión deseable alrededor de 4/5. Son criterios iniciales de diseño, no estándares universales.</p>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:15px">
+    <h2 style="margin-top:0">Historial de participantes</h2>
+    <div class="actions" style="margin:0 0 12px"><button class="secondary" id="exportBtn">Exportar CSV</button><button class="danger" id="clearBtn">Borrar todos los registros</button></div>
+    <div class="tablewrap"><table><thead><tr><th>Participante</th><th>Tiempo</th><th>Claridad</th><th>Dificultad</th><th>Orientación</th><th>Tensión</th><th>Dudas/errores</th><th>Atrapado</th><th>Escondites</th><th>Objetos</th><th>Taser</th><th>Finalizó</th></tr></thead><tbody id="rows"><tr><td colspan="12" class="empty">No hay registros todavía.</td></tr></tbody></table></div>
+  </section>
+  <p class="foot">Uso sugerido: una persona observa la partida y registra los datos; al finalizar, el participante responde las cuatro valoraciones. Los registros se guardan en este navegador mediante almacenamiento local. Para conservarlos en otro equipo, exporta el CSV.</p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const fields = ['player','minutes','clarity','difficulty','navigation','tension','errors','caught','hides','itemsFound','itemsTotal','taser','completed','notes'];
+let records = [];
+try { records = JSON.parse(localStorage.getItem('fabricaTerrorTests') || '[]'); } catch(e) { records = []; }
+const num = id => Number($(id).value || 0);
+const avg = key => records.length ? records.reduce((s,r)=>s+Number(r[key]||0),0)/records.length : 0;
+const fmt = n => n.toFixed(1);
+function save(){
+ const form=$('testForm'); if(!form.reportValidity()) return;
+ const r={}; fields.forEach(k=>r[k]=$(k).value);
+ ['minutes','clarity','difficulty','navigation','tension','errors','caught','hides','itemsFound','itemsTotal','taser'].forEach(k=>r[k]=Number(r[k]||0));
+ if(r.itemsTotal>0 && r.itemsFound>r.itemsTotal){alert('Los objetos encontrados no pueden superar el total disponible.');return;}
+ records.push(r); localStorage.setItem('fabricaTerrorTests',JSON.stringify(records)); form.reset(); render();
+}
+function bar(label,value,max=5){return `<div class="chartrow"><span class="chartlabel">${label}</span><div class="track"><div class="bar" style="width:${Math.max(0,Math.min(100,value/max*100))}%"></div></div><span class="chartvalue">${fmt(value)}/${max}</span></div>`}
+function render(){
+ const n=records.length, completion=n?records.filter(r=>r.completed==='yes').length/n*100:0;
+ $('kParticipants').textContent=n; $('kCompletion').textContent=n?Math.round(completion)+'%':'—';
+ $('kClarity').textContent=n?fmt(avg('clarity'))+'/5':'—'; $('kDifficulty').textContent=n?fmt(avg('difficulty'))+'/5':'—';
+ if(!n){$('bars').innerHTML='<div class="empty">Todavía no hay pruebas registradas.</div>';$('interpretation').textContent='Al registrar participantes aparecerán observaciones orientativas para detectar posibles ajustes.';$('rows').innerHTML='<tr><td colspan="12" class="empty">No hay registros todavía.</td></tr>';return;}
+ $('bars').innerHTML=bar('Claridad',avg('clarity'))+bar('Orientación',avg('navigation'))+bar('Dificultad',avg('difficulty'))+bar('Tensión',avg('tension'));
+ const tips=[];
+ if(avg('clarity')<4)tips.push('La claridad está por debajo de 4/5: revisar cómo se enseñan la linterna, el sigilo y las interacciones sin depender de instrucciones extensas.');
+ if(avg('navigation')<4)tips.push('La orientación es baja: reforzar iluminación ambiental, siluetas, señales visuales y lectura de puertas u objetivos.');
+ if(avg('difficulty')>3.7)tips.push('La dificultad se percibe elevada: revisar frecuencia de persecuciones, agresividad del monstruo y disponibilidad de escondites.');
+ if(avg('difficulty')<2.5)tips.push('La dificultad se percibe baja: considerar aumentar gradualmente la presión del monstruo o los riesgos al explorar.');
+ if(avg('tension')<3.5)tips.push('La tensión podría ser insuficiente: revisar ritmo, sonido, apariciones y seguridad de las zonas de descanso.');
+ if(avg('tension')>4.7)tips.push('La tensión es muy alta: comprobar que existan pausas suficientes para explorar y planear.');
+ const completionRate=completion;
+ if(completionRate<50)tips.push('Menos de la mitad completa el nivel: analizar en qué zona se detienen o son atrapados.');
+ if(!tips.length)tips.push('Los promedios están dentro de los objetivos iniciales. Revisar también las observaciones individuales para encontrar problemas puntuales.');
+ $('interpretation').innerHTML='<ul>'+tips.map(t=>'<li style="margin:7px 0">'+t+'</li>').join('')+'</ul>';
+ $('rows').innerHTML=records.map(r=>`<tr><td>${esc(r.player)}</td><td>${r.minutes}</td><td>${r.clarity}/5</td><td>${r.difficulty}/5</td><td>${r.navigation}/5</td><td>${r.tension}/5</td><td>${r.errors}</td><td>${r.caught}</td><td>${r.hides}</td><td>${r.itemsFound}/${r.itemsTotal}</td><td>${r.taser}</td><td><span class="pill">${r.completed==='yes'?'Sí':'No'}</span></td></tr>`).join('');
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+$('saveBtn').addEventListener('click',save);
+$('clearBtn').addEventListener('click',()=>{if(confirm('¿Seguro que deseas borrar todos los registros de este navegador?')){records=[];localStorage.removeItem('fabricaTerrorTests');render();}});
+$('exportBtn').addEventListener('click',()=>{
+ const headers=['Participante','Duracion_min','Claridad_1a5','Dificultad_1a5','Orientacion_1a5','Tension_1a5','Dudas_errores_observados','Veces_atrapado','Escondites_usados','Objetos_encontrados','Objetos_totales','Usos_taser','Completo','Observaciones'];
+ const keys=['player','minutes','clarity','difficulty','navigation','tension','errors','caught','hides','itemsFound','itemsTotal','taser','completed','notes'];
+ const csv=[headers,...records.map(r=>keys.map(k=>String(r[k]??'').replace(/"/g,'""')))].map(row=>row.map(v=>'"'+v+'"').join(',')).join('\n');
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='resultados_pruebas_fabrica_helados.csv';a.click();URL.revokeObjectURL(url);
+});
+render();
+</script>
+</body>
+</html>
