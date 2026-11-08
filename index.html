@@ -27,7 +27,7 @@ button.secondary{background:#293a57;color:var(--text);border:1px solid #40516e}b
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px}
 .chart-box{background:#0e1728;border:1px solid var(--line);border-radius:12px;padding:14px}
 .chart-box h3{margin:0 0 8px;font-size:14px;color:#c8d5e9;font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--line)}th{color:#b9c9e2;font-weight:600}td{color:#e6edfa}.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:700px}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--line)}th{color:#b9c9e2;font-weight:600}td{color:#e6edfa}.tablewrap{overflow-x:auto}
 .pill{display:inline-block;padding:3px 8px;border-radius:99px;background:#263b55;color:#cfe5ff;font-size:11px}
 .empty{color:var(--muted);padding:18px 0}.foot{font-size:12px;color:var(--muted);margin-top:25px}
 @media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}.chart-grid{grid-template-columns:1fr}}
@@ -45,7 +45,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{t
   </header>
 
   <div class="notice">
-    <strong>Importante:</strong>Sin Datos registrados.
+    <strong>Importante:</strong> Este dashboard contiene 15 registros de ejemplo para demostración. Puedes borrarlos y empezar a registrar pruebas reales.
   </div>
 
   <h2>Resumen de las pruebas</h2>
@@ -130,10 +130,6 @@ table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{t
           </select>
         </div>
         <div class="field">
-          <label for="errors">Dudas o errores observados</label>
-          <input id="errors" type="number" min="0" step="1" value="0">
-        </div>
-        <div class="field">
           <label for="caught">Veces que el monstruo lo atrapó</label>
           <input id="caught" type="number" min="0" step="1" value="0">
         </div>
@@ -144,10 +140,6 @@ table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{t
         <div class="field">
           <label for="itemsFound">Objetos importantes encontrados</label>
           <input id="itemsFound" type="number" min="0" step="1" value="0">
-        </div>
-        <div class="field">
-          <label for="itemsTotal">Total de objetos importantes disponibles</label>
-          <input id="itemsTotal" type="number" min="0" step="1" value="0">
         </div>
         <div class="field">
           <label for="completed">¿Completó el nivel?</label>
@@ -184,7 +176,6 @@ table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{t
     </section>
   </div>
 
-  <!-- Gráficas adicionales -->
   <section class="panel" style="margin-top:15px">
     <h2 style="margin-top:0">Gráficas de resultados</h2>
     <div class="chart-grid">
@@ -219,7 +210,6 @@ table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{t
             <th>Dificultad</th>
             <th>Orientación</th>
             <th>Tensión</th>
-            <th>Dudas/errores</th>
             <th>Atrapado</th>
             <th>Escondites</th>
             <th>Objetos</th>
@@ -227,7 +217,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{t
           </tr>
         </thead>
         <tbody id="rows">
-          <tr><td colspan="11" class="empty">No hay registros todavía.</td></tr>
+          <tr><td colspan="10" class="empty">No hay registros todavía.</td></tr>
         </tbody>
       </table>
     </div>
@@ -240,9 +230,36 @@ table{width:100%;border-collapse:collapse;font-size:13px;min-width:750px}th,td{t
 
 <script>
 const $ = id => document.getElementById(id);
-const fields = ['player','minutes','clarity','difficulty','navigation','tension','errors','caught','hides','itemsFound','itemsTotal','completed','notes'];
-let records = [];
-try { records = JSON.parse(localStorage.getItem('fabricaTerrorTests') || '[]'); } catch(e) { records = []; }
+const fields = ['player','minutes','clarity','difficulty','navigation','tension','caught','hides','itemsFound','completed','notes'];
+
+// 15 registros de ejemplo
+let records = [
+  {player:"Jugador 01", minutes:11.5, clarity:4, difficulty:3, navigation:4, tension:4, caught:1, hides:3, itemsFound:4, completed:"yes", notes:"Encontró los escondites rápido"},
+  {player:"Jugador 02", minutes:8.0, clarity:3, difficulty:4, navigation:2, tension:5, caught:3, hides:1, itemsFound:2, completed:"no", notes:"Se perdió en la zona de cámaras"},
+  {player:"Jugador 03", minutes:14.0, clarity:5, difficulty:3, navigation:5, tension:4, caught:0, hides:4, itemsFound:5, completed:"yes", notes:"Muy buena lectura del mapa"},
+  {player:"Jugador 04", minutes:6.5, clarity:2, difficulty:5, navigation:2, tension:5, caught:4, hides:0, itemsFound:1, completed:"no", notes:"No entendió el sistema de sigilo"},
+  {player:"Jugador 05", minutes:12.5, clarity:4, difficulty:3, navigation:3, tension:4, caught:2, hides:2, itemsFound:3, completed:"yes", notes:""},
+  {player:"Jugador 06", minutes:9.5, clarity:3, difficulty:4, navigation:3, tension:3, caught:2, hides:2, itemsFound:3, completed:"no", notes:"Se quedó atascado en la cinta transportadora"},
+  {player:"Jugador 07", minutes:15.0, clarity:5, difficulty:2, navigation:4, tension:3, caught:0, hides:5, itemsFound:5, completed:"yes", notes:"Completó sin ser detectado casi nunca"},
+  {player:"Jugador 08", minutes:7.0, clarity:3, difficulty:4, navigation:2, tension:5, caught:3, hides:1, itemsFound:1, completed:"no", notes:"Alta tensión, pero se frustró"},
+  {player:"Jugador 09", minutes:13.0, clarity:4, difficulty:3, navigation:4, tension:4, caught:1, hides:3, itemsFound:4, completed:"yes", notes:""},
+  {player:"Jugador 10", minutes:10.5, clarity:4, difficulty:3, navigation:3, tension:4, caught:1, hides:2, itemsFound:3, completed:"yes", notes:"Buen uso de escondites"},
+  {player:"Jugador 11", minutes:5.5, clarity:2, difficulty:5, navigation:1, tension:4, caught:5, hides:0, itemsFound:0, completed:"no", notes:"Abandonó por frustración"},
+  {player:"Jugador 12", minutes:16.0, clarity:5, difficulty:2, navigation:5, tension:3, caught:0, hides:4, itemsFound:5, completed:"yes", notes:"Exploró con calma"},
+  {player:"Jugador 13", minutes:9.0, clarity:3, difficulty:4, navigation:3, tension:5, caught:2, hides:1, itemsFound:2, completed:"no", notes:"Muy asustado, poco progreso"},
+  {player:"Jugador 14", minutes:12.0, clarity:4, difficulty:3, navigation:4, tension:4, caught:1, hides:3, itemsFound:4, completed:"yes", notes:""},
+  {player:"Jugador 15", minutes:8.5, clarity:3, difficulty:4, navigation:2, tension:4, caught:3, hides:2, itemsFound:2, completed:"no", notes:"Problemas de orientación en la planta baja"}
+];
+
+// Guardamos los ejemplos en localStorage la primera vez
+try {
+  const existing = localStorage.getItem('fabricaTerrorTests');
+  if (!existing) {
+    localStorage.setItem('fabricaTerrorTests', JSON.stringify(records));
+  } else {
+    records = JSON.parse(existing);
+  }
+} catch(e) {}
 
 const avg = key => records.length ? records.reduce((s,r)=>s+Number(r[key]||0),0)/records.length : 0;
 const fmt = n => n.toFixed(1);
@@ -252,14 +269,7 @@ let avgChart = null;
 let completionChart = null;
 let distChart = null;
 
-const chartDefaults = {
-  color: '#c8d5e9',
-  borderColor: '#2c3b56',
-  font: { family: 'system-ui, sans-serif', size: 12 }
-};
-
 function createCharts() {
-  // Promedios (barras)
   const avgCtx = $('avgChart').getContext('2d');
   avgChart = new Chart(avgCtx, {
     type: 'bar',
@@ -310,7 +320,6 @@ function createCharts() {
     }
   });
 
-  // Finalización
   const compCtx = $('completionChart').getContext('2d');
   completionChart = new Chart(compCtx, {
     type: 'doughnut',
@@ -335,33 +344,16 @@ function createCharts() {
     }
   });
 
-  // Distribución
   const distCtx = $('distChart').getContext('2d');
   distChart = new Chart(distCtx, {
     type: 'bar',
     data: {
       labels: ['1', '2', '3', '4', '5'],
       datasets: [
-        {
-          label: 'Claridad',
-          data: [0,0,0,0,0],
-          backgroundColor: 'rgba(102, 179, 255, 0.7)'
-        },
-        {
-          label: 'Orientación',
-          data: [0,0,0,0,0],
-          backgroundColor: 'rgba(167, 139, 250, 0.7)'
-        },
-        {
-          label: 'Dificultad',
-          data: [0,0,0,0,0],
-          backgroundColor: 'rgba(246, 201, 107, 0.7)'
-        },
-        {
-          label: 'Tensión',
-          data: [0,0,0,0,0],
-          backgroundColor: 'rgba(255, 133, 133, 0.7)'
-        }
+        { label: 'Claridad', data: [0,0,0,0,0], backgroundColor: 'rgba(102, 179, 255, 0.7)' },
+        { label: 'Orientación', data: [0,0,0,0,0], backgroundColor: 'rgba(167, 139, 250, 0.7)' },
+        { label: 'Dificultad', data: [0,0,0,0,0], backgroundColor: 'rgba(246, 201, 107, 0.7)' },
+        { label: 'Tensión', data: [0,0,0,0,0], backgroundColor: 'rgba(255, 133, 133, 0.7)' }
       ]
     },
     options: {
@@ -392,7 +384,6 @@ function createCharts() {
 function updateCharts() {
   if (!avgChart) return;
 
-  // Promedios
   avgChart.data.datasets[0].data = [
     avg('clarity'),
     avg('navigation'),
@@ -401,13 +392,11 @@ function updateCharts() {
   ];
   avgChart.update();
 
-  // Finalización
   const completed = records.filter(r => r.completed === 'yes').length;
   const notCompleted = records.length - completed;
   completionChart.data.datasets[0].data = [completed, notCompleted];
   completionChart.update();
 
-  // Distribución
   const keys = ['clarity', 'navigation', 'difficulty', 'tension'];
   keys.forEach((key, idx) => {
     const counts = [0,0,0,0,0];
@@ -427,14 +416,9 @@ function save(){
   const r = {};
   fields.forEach(k => r[k] = $(k).value);
 
-  ['minutes','clarity','difficulty','navigation','tension','errors','caught','hides','itemsFound','itemsTotal'].forEach(k => {
+  ['minutes','clarity','difficulty','navigation','tension','caught','hides','itemsFound'].forEach(k => {
     r[k] = Number(r[k] || 0);
   });
-
-  if(r.itemsTotal > 0 && r.itemsFound > r.itemsTotal){
-    alert('Los objetos encontrados no pueden superar el total disponible.');
-    return;
-  }
 
   records.push(r);
   localStorage.setItem('fabricaTerrorTests', JSON.stringify(records));
@@ -453,7 +437,7 @@ function render(){
 
   if(!n){
     $('interpretation').textContent = 'Al registrar participantes aparecerán observaciones orientativas para detectar posibles ajustes.';
-    $('rows').innerHTML = '<tr><td colspan="11" class="empty">No hay registros todavía.</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="10" class="empty">No hay registros todavía.</td></tr>';
     updateCharts();
     return;
   }
@@ -478,10 +462,9 @@ function render(){
       <td>${r.difficulty}/5</td>
       <td>${r.navigation}/5</td>
       <td>${r.tension}/5</td>
-      <td>${r.errors}</td>
       <td>${r.caught}</td>
       <td>${r.hides}</td>
-      <td>${r.itemsFound}/${r.itemsTotal}</td>
+      <td>${r.itemsFound}</td>
       <td><span class="pill">${r.completed === 'yes' ? 'Sí' : 'No'}</span></td>
     </tr>
   `).join('');
@@ -508,11 +491,11 @@ $('clearBtn').addEventListener('click', () => {
 $('exportBtn').addEventListener('click', () => {
   const headers = [
     'Participante','Duracion_min','Claridad_1a5','Dificultad_1a5','Orientacion_1a5','Tension_1a5',
-    'Dudas_errores_observados','Veces_atrapado','Escondites_usados','Objetos_encontrados','Objetos_totales','Completo','Observaciones'
+    'Veces_atrapado','Escondites_usados','Objetos_encontrados','Completo','Observaciones'
   ];
   const keys = [
     'player','minutes','clarity','difficulty','navigation','tension',
-    'errors','caught','hides','itemsFound','itemsTotal','completed','notes'
+    'caught','hides','itemsFound','completed','notes'
   ];
 
   const csv = [headers, ...records.map(r => keys.map(k => String(r[k] ?? '').replace(/"/g, '""')))]
